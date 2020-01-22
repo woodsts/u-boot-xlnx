@@ -144,7 +144,6 @@ static int zynq_qspi_ofdata_to_platdata(struct udevice *bus)
 	int offset;
 	u32 value;
 
-	debug("%s\n", __func__);
 	plat->regs = (struct zynq_qspi_regs *)ZYNQ_QSPI_BASEADDR;
 
 	is_dual = fdtdec_get_int(gd->fdt_blob, dev_of_offset(bus), "is-dual", -1);
@@ -239,8 +238,6 @@ static void zynq_qspi_init_hw(struct zynq_qspi_priv *priv)
 	while (readl(&regs->isr) & ZYNQ_QSPI_IXR_RXNEMPTY_MASK)
 		readl(&regs->drxr);
 
-	debug("%s is_dual:0x%x, is_dio:0x%x\n", __func__, priv->is_dual, priv->is_dio);
-
 	writel(0x7F, &regs->isr);
 	confr = readl(&regs->cr);
 	confr &= ~ZYNQ_QSPI_CR_MSA_MASK;
@@ -303,8 +300,6 @@ static int zynq_qspi_probe(struct udevice *bus)
 	struct zynq_qspi_platdata *plat = dev_get_platdata(bus);
 	struct zynq_qspi_priv *priv = dev_get_priv(bus);
 
-	debug("zynq_qspi_probe:  bus:%p, priv:%p \n", bus, priv);
-
 	priv->regs = plat->regs;
 	priv->is_dual = plat->is_dual;
 
@@ -328,7 +323,6 @@ static int zynq_qspi_set_speed(struct udevice *bus, uint speed)
 	uint32_t cr;
 	u8 baud_rate_val = 0;
 
-	debug("%s\n", __func__);
 	if (speed > plat->frequency)
 		speed = plat->frequency;
 
@@ -495,8 +489,6 @@ static void zynq_qspi_chipselect(struct  zynq_qspi_priv *priv, int is_on)
 	u32 confr;
 	struct zynq_qspi_regs *regs = priv->regs;
 
-	debug("%s: is_on: %d\n", __func__, is_on);
-
 	confr = readl(&regs->cr);
 
 	if (is_on) {
@@ -572,8 +564,6 @@ static int zynq_qspi_irq_poll(struct zynq_qspi_priv *priv)
 	u32 rxindex = 0;
 	u32 rxcount;
 	u32 status;
-
-	debug("%s: zqspi: 0x%08x\n", __func__, (u32)priv);
 
 	/* Poll until any of the interrupt status bits are set */
 	max_loop = 0;
@@ -722,8 +712,6 @@ static int zynq_qspi_transfer(struct zynq_qspi_priv *priv)
 	unsigned cs_change = 1;
 	int status = 0;
 
-	debug("%s\n", __func__);
-
 	while (1) {
 		/* Select the chip if required */
 		if (cs_change)
@@ -767,7 +755,6 @@ static int zynq_qspi_claim_bus(struct udevice *dev)
 	struct zynq_qspi_priv *priv = dev_get_priv(bus);
 	struct zynq_qspi_regs *regs = priv->regs;
 
-	debug("%s\n", __func__);
 	writel(ZYNQ_QSPI_ENR_SPI_EN_MASK, &regs->enr);
 
 	return 0;
@@ -779,7 +766,6 @@ static int zynq_qspi_release_bus(struct udevice *dev)
 	struct zynq_qspi_priv *priv = dev_get_priv(bus);
 	struct zynq_qspi_regs *regs = priv->regs;
 
-	debug("%s\n", __func__);
 	writel(~ZYNQ_QSPI_ENR_SPI_EN_MASK, &regs->enr);
 
 	return 0;
@@ -790,11 +776,6 @@ static int zynq_qspi_xfer(struct udevice *dev, unsigned int bitlen,
 {
 	struct udevice *bus = dev->parent;
 	struct zynq_qspi_priv *priv = dev_get_priv(bus);
-
-	debug("%s", __func__);
-	debug("%s: slave: 0x%08x bitlen: %d dout: 0x%08x ", __func__,
-	      (u32)priv, bitlen, (u32)dout);
-	debug("din: 0x%08x flags: 0x%lx\n", (u32)din, flags);
 
 	priv->tx_buf = dout;
 	priv->rx_buf = din;
