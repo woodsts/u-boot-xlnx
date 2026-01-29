@@ -406,22 +406,25 @@ int dram_init(void)
 	ofnode mem = ofnode_null();
 	struct resource res;
 	int ret, i, reg = 0;
-	u32 num_banks = 0;
+	u32 num_banks, reloc_use = 0;
 	u64 text = (u64)_start;
 
 	gd->ram_base = (unsigned long)~0;
 
-	mem = get_next_memory_node(mem);
+	mem = fdtdec_get_next_memory_node(mem);
 	if (!ofnode_valid(mem)) {
 		printf("%s: Missing /memory node\n", __func__);
 		return -EINVAL;
 	}
 
+	debug("%s: Text base = 0x%llx\n", __func__, text);
+
 	for (i = 0; i < CONFIG_NR_DRAM_BANKS; i++) {
+		reloc_use = 0;
 		ret = ofnode_read_resource(mem, reg++, &res);
 		if (ret < 0) {
 			reg = 0;
-			mem = get_next_memory_node(mem);
+			mem = fdtdec_get_next_memory_node(mem);
 			if (!ofnode_valid(mem))
 				break;
 
@@ -434,21 +437,23 @@ int dram_init(void)
 			return -EINVAL;
 
 		bank_info[i].phys = (phys_addr_t)res.start;
-		bank_info[i].size  = (phys_size_t)(res.end - res.start + 1);
+		bank_info[i].size = (phys_size_t)(res.end - res.start + 1);
 
 		if (bank_info[i].size == 0)
 			break;
-
-		debug("%s: DRAM Bank #%d: start = 0x%llx, size = 0x%llx\n",
-		      __func__, i, (unsigned long long)bank_info[i].phys,
-		      (unsigned long long)bank_info[i].size);
 
 		if (text >= bank_info[i].phys &&
 		    text < (bank_info[i].phys + bank_info[i].size)) {
 			gd->ram_base = bank_info[i].phys;
 			gd->ram_size = bank_info[i].size;
-			debug("%s: Text base = 0x%llx\n", __func__, text);
+			reloc_use = 1;
 		}
+
+		debug("%s: DRAM Bank #%d: start = 0x%llx, size = 0x%llx %s",
+		      __func__, i, (unsigned long long)bank_info[i].phys,
+		      (unsigned long long)bank_info[i].size,
+		      (reloc_use ? " - USED for RELOCATION\n" : "\n"));
+
 		num_banks++;
 	}
 

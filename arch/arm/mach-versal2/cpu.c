@@ -92,7 +92,7 @@ void mem_map_fill(struct mm_region *bank_info, u32 num_banks)
 }
 
 /**
- * fill_gd_mem_info() - Copy DRAM banks from mem_map to bd_info
+ * fill_bd_mem_info() - Copy DRAM banks from mem_map to bd_info
  *
  * Transfers DRAM bank information from the global versal2_mem_map[]
  * array to bd->bi_dram[] for passing memory configuration to the
@@ -100,10 +100,8 @@ void mem_map_fill(struct mm_region *bank_info, u32 num_banks)
  * address and size are copied.
  *
  * This is called during dram_init_banksize() after the memory map
- * has been populated by mem_map_fill() in dram_init().
- *
- * Context: Called after dram_init() but before kernel handoff
- * Side effects: Modifies bd->bi_dram[] array
+ * has been populated by mem_map_fill() in dram_init(). Called after
+ * dram_init() but before kernel handoff.
  */
 void fill_bd_mem_info(void)
 {

@@ -200,7 +200,8 @@ struct fdtdec_phandle_args {
 };
 
 /**
- * get_next_memory_node() - Get the next enabled memory node from device tree
+ * fdtdec_get_next_memory_node() - Get the next enabled memory node from device tree
+ *
  * @mem: Current memory node to start search from, or ofnode_null() to get first node
  *
  * This function iterates through device tree nodes with device_type = "memory"
@@ -212,14 +213,14 @@ struct fdtdec_phandle_args {
  * for the next node with the "memory" device_type property and checking
  * its status property.
  *
- * Context: Can be called multiple times to iterate through all memory nodes.
- *          Pass ofnode_null() on first call, then pass the returned node
- *          on subsequent calls until an invalid node is returned.
+ * Can be called multiple times to iterate through all memory nodes.
+ * Pass ofnode_null() on first call, then pass the returned node
+ * on subsequent calls until an invalid node is returned.
  *
  * Return: Next valid, enabled memory ofnode, or invalid ofnode if no more
  *         memory nodes exist
  */
-ofnode get_next_memory_node(ofnode mem);
+ofnode fdtdec_get_next_memory_node(ofnode mem);
 
 /**
  * fdtdec_parse_phandle_with_args() - Find a node pointed by phandle in a list
