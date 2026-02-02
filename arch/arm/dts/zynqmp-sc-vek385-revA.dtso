@@ -2,12 +2,13 @@
 /*
  * dts file for SC on VEK385 revA (k24)
  *
- * (C) Copyright 2024, Advanced Micro Devices, Inc.
+ * (C) Copyright 2024-2026, Advanced Micro Devices, Inc.
  *
  * Michal Simek <michal.simek@amd.com>
  */
 
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/phy/phy.h>
 
 /dts-v1/;
 /plugin/;
@@ -16,6 +17,12 @@
 	compatible = "xlnx,zynqmp-sc-vek385-revA",
 		     "xlnx,zynqmp-sc-vek385", "xlnx,zynqmp";
 	model = "ZynqMP SC VEK385 revA";
+
+	sysctrl_gtr_clk2: sysctrl-gtr-clk2 {
+		clock-frequency = <26000000>;
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+	};
 };
 
 &i2c0 { /* I2C_SCK C23/C24 - MIO 66/67 */
@@ -232,4 +239,15 @@
 
 &zynqmp_dpsub {
 	status = "disabled";
+};
+
+&psgtr {
+        status = "okay";
+        clocks = <&sysctrl_gtr_clk2>;
+        clock-names = "ref2";
+};
+
+&usb0 {
+	phy-names = "usb3-phy";
+	phys = <&psgtr 2 PHY_TYPE_USB3 0 2>;
 };
