@@ -4863,11 +4863,26 @@ static int micron_is_unlocked(struct spi_nor *nor, loff_t ofs, uint64_t len)
  */
 static int mx_write_sr_cr(struct spi_nor *nor, u8 *sr_cr)
 {
+	struct spi_mem_op op;
 	int ret;
+
+	op = (struct spi_mem_op)SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WRSR, 0),
+					   SPI_MEM_OP_ADDR(0, 0, 0),
+					   SPI_MEM_OP_NO_DUMMY,
+					   SPI_MEM_OP_DATA_OUT(2, NULL, 0));
+
+	spi_nor_setup_op(nor, &op, nor->reg_proto);
+
+	/*
+	 * In Octal DTR mode, the number of address bytes is always 4 regardless
+	 * of addressing mode setting.
+	 */
+	if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR)
+		op.addr.nbytes = 4;
 
 	write_enable(nor);
 
-	ret = nor->write_reg(nor, SPINOR_OP_WRSR, sr_cr, 2);
+	ret = spi_nor_read_write_reg(nor, &op, sr_cr);
 	if (ret < 0) {
 		dev_dbg(nor->dev,
 			"error while writing configuration register\n");
@@ -4890,16 +4905,36 @@ static int mx_write_sr_cr(struct spi_nor *nor, u8 *sr_cr)
 
 static int mx_read_cr(struct spi_nor *nor)
 {
+	struct spi_mem_op op;
 	int ret;
-	u8 val;
+	u8 val[2];
 
-	ret = nor->read_reg(nor, SPINOR_OP_RDCR_MX, &val, 1);
+	op = (struct spi_mem_op)SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDCR_MX, 0),
+					   SPI_MEM_OP_ADDR(0, 1, 0),
+					   SPI_MEM_OP_DUMMY(0, 0),
+					   SPI_MEM_OP_DATA_IN(1, NULL, 0));
+
+	spi_nor_setup_op(nor, &op, nor->reg_proto);
+
+	if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
+		op.addr.nbytes = 4;
+		op.dummy.nbytes = 4;
+	}
+
+	/*
+	 * We don't want to read only one byte in DTR mode. So, read 2 and then
+	 * discard the second byte.
+	 */
+	if (spi_nor_protocol_is_dtr(nor->reg_proto))
+		op.data.nbytes = 2;
+
+	ret = spi_nor_read_write_reg(nor, &op, &val[0]);
 	if (ret < 0) {
 		dev_dbg(nor->dev, "error %d reading CR\n", ret);
 		return ret;
 	}
 
-	return val;
+	return val[0];
 }
 
 /**
