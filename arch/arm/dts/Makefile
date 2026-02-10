@@ -471,6 +471,8 @@ dtb-$(CONFIG_ARCH_VERSAL2) += \
 	versal2-vek385-revB.dtb \
 	amd-versal2-virt.dtb
 
+versal2-ve-p-a1225-00-revA-x-prc-11-revA-dtbs := versal2-ve-p-a1225-00-revA.dtb x-prc-11-revA.dtbo
+dtb-$(CONFIG_ARCH_VERSAL2) += versal2-ve-p-a1225-00-revA-x-prc-11-revA.dtb
 versal2-ve-p-a2112-00-revA-x-prc-10-revA-dtbs := versal2-ve-p-a2112-00-revA.dtb x-prc-10-revA.dtbo
 versal2-ve-p-a2112-00-revA-x-prc-10-i3c-revA-dtbs := versal2-ve-p-a2112-00-revA.dtb x-prc-10-i3c-revA.dtbo
 versal2-ve-p-a2112-00-revA-x-prc-11-revA-dtbs := versal2-ve-p-a2112-00-revA.dtb x-prc-11-revA.dtbo
