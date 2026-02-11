@@ -262,7 +262,7 @@ int zynqmp_pm_ufs_cal_reg(u32 *value)
 }
 #endif
 
-#if defined(CONFIG_ARCH_VERSAL)
+#if defined(CONFIG_ARCH_VERSAL) || defined(CONFIG_ARCH_VERSAL2)
 u32 zynqmp_pm_get_pmc_global_pggs_reg(u32 reg_addr)
 {
 	int ret;
@@ -281,17 +281,33 @@ u32 zynqmp_pm_get_pmc_global_pggs_reg(u32 reg_addr)
 
 	ret = zynqmp_pm_is_function_supported(PM_IOCTL, IOCTL_READ_PGGS);
 	if (ret) {
-		printf("%s: IOCTL_READ_PGGS is not supported failed with error code: %d\n",
-		       __func__, ret);
-		return 0;
-	}
+		ret = zynqmp_pm_is_function_supported(PM_IOCTL, IOCTL_READ_REG);
+		if (ret) {
+			printf("%s: IOCTL_READ_REG is not supported : %d\n"
+				, __func__, ret);
+			return 0;
+		}
 
-	ret = xilinx_pm_request(PM_IOCTL, PMC_GLOBAL_PGGS3_REG_NODE,
-				IOCTL_READ_PGGS, value, 0, 0, 0, ret_payload);
-	if (ret) {
-		printf("%s: node 0x%x get pggs register failed\n",
-		       __func__, PMC_GLOBAL_PGGS3_REG_NODE);
-		return 0;
+		/* find node ID from the pggs3 offset */
+		value = PM_REG_PGGS3 + value;
+
+		ret = xilinx_pm_request(PM_IOCTL, value,
+					IOCTL_READ_REG, 0, 0, 0, 0,
+					ret_payload);
+		if (ret) {
+			printf("%s: node 0x%x get pggs register failed\n",
+			       __func__, value);
+			return 0;
+		}
+	} else {
+		ret = xilinx_pm_request(PM_IOCTL, PMC_GLOBAL_PGGS3_REG_NODE,
+					IOCTL_READ_PGGS, value, 0, 0, 0,
+					ret_payload);
+		if (ret) {
+			printf("%s: node 0x%x get pggs register failed\n",
+			       __func__, PMC_GLOBAL_PGGS3_REG_NODE);
+			return 0;
+		}
 	}
 
 	return ret_payload[1];
