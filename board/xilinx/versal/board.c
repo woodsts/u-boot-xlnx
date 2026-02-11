@@ -490,35 +490,4 @@ void set_dfu_alt_info(char *interface, char *devstr)
 
 	env_set("dfu_alt_info", buf);
 }
-
-/*
- * The PMC Global pggs4 register contains below information
- * in each byte as:
- *
- * Byte[3]: Magic number
- * Byte[2]: Boot counter value
- * Byte[1]: Boot partition value - boot index
- * Byte[0]: Rollback counter value
- */
-
-#define MAGIC_NUM	0x1D
-#define MAGIC_MASK	GENMASK(31, 24)
-#define BOOTINDEX_MASK	GENMASK(15, 8)
-
-int plat_get_boot_index(void)
-{
-	u32 val;
-
-	if (IS_ENABLED(CONFIG_ZYNQMP_FIRMWARE))
-		val = zynqmp_pm_get_pmc_global_pggs_reg(PMC_GLOBAL_PGGS4_REG);
-	else
-		val = readl(PMC_GLOBAL_PGGS4_REG);
-
-	if (FIELD_GET(MAGIC_MASK, val) != MAGIC_NUM) {
-		log_err("FWU requires PMC magic number 0x%x\n", MAGIC_NUM);
-		return -EINVAL;
-	}
-
-	return FIELD_GET(BOOTINDEX_MASK, val);
-}
 #endif
