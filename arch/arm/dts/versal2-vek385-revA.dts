@@ -2,7 +2,7 @@
 /*
  * dts file for AMD VEK385 revA
  *
- * Copyright (C) 2024 - 2025, Advanced Micro Devices, Inc.
+ * Copyright (C) 2024 - 2026, Advanced Micro Devices, Inc.
  *
  * Michal Simek <michal.simek@amd.com>
  */
@@ -47,6 +47,13 @@
 		compatible = "pwm-fan";
 		status = "okay";
 		pwms = <&ttc0 2 40000 1>;
+	};
+
+	usb_hub_delay: enable-delay {
+		compatible = "gpio-delay";
+		#gpio-cells = <3>;
+		gpio-controller;
+		gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
 	};
 };
 
@@ -134,7 +141,7 @@
 		compatible = "usb424,2744";
 		reg = <1>;
 		i2c-bus = <&hub>;
-		reset-gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&usb_hub_delay 0 10000 10000>;
 	};
 	/* USB 3.0 is not connected */
 	/* port 0 u109 USB-SD converter */
