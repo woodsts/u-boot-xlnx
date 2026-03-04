@@ -150,6 +150,7 @@ enum spi_polarity {
  * @memory_map:		Address of read-only SPI flash access.
  * @flags:		Indication of SPI flags.
  * @device_id:		SPI memory device ID bytes
+ * @multi_die:		flag indicating flash with multiple dies
  */
 struct spi_slave {
 #if CONFIG_IS_ENABLED(DM_SPI)
