@@ -170,8 +170,8 @@
 };
 
 &ttc0 { /* LPD_MIO23 FAN_PWM */
-        status = "okay";
-        #pwm-cells = <3>;
+	status = "okay";
+	#pwm-cells = <3>;
 };
 
 &gem0 { /* PMC_MIO_48, LPD_MIO0-11/24/25 */

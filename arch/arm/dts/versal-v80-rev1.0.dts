@@ -89,7 +89,7 @@
 };
 
 &sysmon0 {
-        status = "okay";
+	status = "okay";
 };
 
 &spi0 { /* PS_MIO12-17, PS_MIO15 */
