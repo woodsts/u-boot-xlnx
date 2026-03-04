@@ -579,6 +579,8 @@ struct spi_flash {
  * @flash_gpio_reset:	GPIO descriptor for flash hardware reset
  * @dirmap:		pointers to struct spi_mem_dirmap_desc for reads/writes.
  * @priv:		the private data
+ * @num_flash:		number of flashes connected in parallel or stacked mode
+ * @cs_params:		chip select parameters for each flash
  */
 struct spi_nor {
 	struct mtd_info		mtd;
