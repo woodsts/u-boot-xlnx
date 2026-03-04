@@ -249,7 +249,6 @@
 				  "APU_KBRST_L", "APU_PWR_GD", "VER_SEQ_MCU_ALERT_L", "APU_SEQ_MCU_ALERT_L"; /* 4 - 7 */
 	};
 
-
 	max7321_u469: gpio@6d { /* u469 */
 		compatible = "maxim,max7321";
 		reg = <0x6d>;
