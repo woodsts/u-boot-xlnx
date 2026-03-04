@@ -6319,11 +6319,11 @@ void spi_nor_set_fixups(struct spi_nor *nor)
 #endif
 
 #if defined(CONFIG_SPI_FLASH_ISSI)
-       if (!strcmp(nor->info->name, "is25wx256") ||
-           !strcmp(nor->info->name, "is25lx512")) {
-               nor->fixups = &mt35xu512aba_fixups;
-               return;
-       }
+	if (!strcmp(nor->info->name, "is25wx256") ||
+	    !strcmp(nor->info->name, "is25lx512")) {
+		nor->fixups = &mt35xu512aba_fixups;
+		return;
+	}
 #endif
 
 #if defined(CONFIG_SPI_FLASH_GIGADEVICE)
