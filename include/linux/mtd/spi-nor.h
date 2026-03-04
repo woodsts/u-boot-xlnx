@@ -575,6 +575,7 @@ struct spi_flash {
  * @quad_enable:	[FLASH-SPECIFIC] enables SPI NOR quad mode
  * @octal_dtr_enable:	[FLASH-SPECIFIC] enables SPI NOR octal DTR mode.
  * @ready:		[FLASH-SPECIFIC] check if the flash is ready
+ * @flash_lock_info:	[FLASH-SPECIFIC] get flash lock info
  * @flash_gpio_reset:	GPIO descriptor for flash hardware reset
  * @dirmap:		pointers to struct spi_mem_dirmap_desc for reads/writes.
  * @priv:		the private data
