@@ -2,7 +2,7 @@
 /*
  * dts file for AMD Alveo Versal V80 rev1.0
  *
- * Copyright (C) 2023 - 2025, Advanced Micro Devices, Inc.
+ * Copyright (C) 2023 - 2026, Advanced Micro Devices, Inc.
  *
  * Michal Simek <michal.simek@amd.com>
  * Sandeep Gundlupet Raju <sandeep.gundlupet-raju@amd.com>
@@ -34,6 +34,21 @@
 	chosen {
 		bootargs = "earlycon";
 		stdout-path = "serial0:115200";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		cma: linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x10000000>;
+			alignment = <0x0 0x10000000>;
+			alloc-ranges = <0x0 0x0 0x0 0x80000000>;
+			linux,cma-default;
+		};
 	};
 };
 
