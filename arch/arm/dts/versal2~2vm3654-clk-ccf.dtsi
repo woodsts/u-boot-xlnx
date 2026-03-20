@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * dts file for AMD Versal2 with PM
+ *
+ * Copyright (C) 2026, Advanced Micro Devices, Inc.
+ *
+ * Michal Simek <michal.simek@amd.com>
+ */
+
+&cpu0 {
+	clocks = <&versal2_clk ACPU_0>;
+};
+
+&cpu100 {
+	clocks = <&versal2_clk ACPU_0>;
+};
+
+&cpu200 {
+	clocks = <&versal2_clk ACPU_0>;
+};
+
+&cpu300 {
+	clocks = <&versal2_clk ACPU_0>;
+};

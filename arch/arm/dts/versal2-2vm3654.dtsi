@@ -1,0 +1,181 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * dts file for AMD Versal Prime Series Gen 2 - 2vm3654
+ *
+ * Copyright (C) 2026, Advanced Micro Devices, Inc.
+ *
+ * Michal Simek <michal.simek@amd.com>
+ */
+
+/ {
+	compatible = "xlnx,versal2-2vm3654";
+	model = "AMD Versal Gen 2 2VM3654";
+
+/delete-node/ cpus;
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&cpu0>;
+				};
+				core1 {
+					cpu = <&cpu100>;
+				};
+				core2 {
+					cpu = <&cpu200>;
+				};
+				core3 {
+					cpu = <&cpu300>;
+				};
+			};
+		};
+
+		cpu0: cpu@0 {
+			compatible = "arm,cortex-a78";
+			device_type = "cpu";
+			enable-method = "psci";
+			reg = <0>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_RETENTION_0>;
+			d-cache-size = <0x10000>; /* 64kB */
+			d-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			d-cache-sets = <256>;
+			i-cache-size = <0x10000>; /* 64kB */
+			i-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			i-cache-sets = <256>;
+			next-level-cache = <&l2_00>;
+			l2_00: l2-cache {
+				compatible = "cache";
+				cache-level = <2>;
+				cache-size = <0x80000>; /* 512kB */
+				cache-line-size = <64>;
+				/* 8 ways set associativity */
+				/* cache_size / (line_size/associativity) */
+				cache-sets = <1024>;
+				cache-unified;
+				next-level-cache = <&l3_0>;
+			};
+		};
+		cpu100: cpu@100 {
+			compatible = "arm,cortex-a78";
+			device_type = "cpu";
+			enable-method = "psci";
+			reg = <0x100>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_RETENTION_0>;
+			d-cache-size = <0x10000>; /* 64kB */
+			d-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			d-cache-sets = <256>;
+			i-cache-size = <0x10000>; /* 64kB */
+			i-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			i-cache-sets = <256>;
+			next-level-cache = <&l2_01>;
+			l2_01: l2-cache {
+				compatible = "cache";
+				cache-level = <2>;
+				cache-size = <0x80000>; /* 512kB */
+				cache-line-size = <64>;
+				/* 8 ways set associativity */
+				/* cache_size / (line_size/associativity) */
+				cache-sets = <1024>;
+				cache-unified;
+				next-level-cache = <&l3_0>;
+			};
+		};
+		cpu200: cpu@200 {
+			compatible = "arm,cortex-a78";
+			device_type = "cpu";
+			enable-method = "psci";
+			reg = <0x200>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_RETENTION_0>;
+			d-cache-size = <0x10000>; /* 64kB */
+			d-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			d-cache-sets = <256>;
+			i-cache-size = <0x10000>; /* 64kB */
+			i-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			i-cache-sets = <256>;
+			next-level-cache = <&l2_02>;
+			l2_02: l2-cache {
+				compatible = "cache";
+				cache-level = <2>;
+				cache-size = <0x80000>; /* 512kB */
+				cache-line-size = <64>;
+				/* 8 ways set associativity */
+				/* cache_size / (line_size/associativity) */
+				cache-sets = <1024>;
+				cache-unified;
+				next-level-cache = <&l3_0>;
+			};
+		};
+		cpu300: cpu@300 {
+			compatible = "arm,cortex-a78";
+			device_type = "cpu";
+			enable-method = "psci";
+			reg = <0x300>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_RETENTION_0>;
+			d-cache-size = <0x10000>; /* 64kB */
+			d-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			d-cache-sets = <256>;
+			i-cache-size = <0x10000>; /* 64kB */
+			i-cache-line-size = <64>;
+			/* 4 ways set associativity */
+			/* cache_size / (line_size / associativity) */
+			i-cache-sets = <256>;
+			next-level-cache = <&l2_03>;
+			l2_03: l2-cache {
+				compatible = "cache";
+				cache-level = <2>;
+				cache-size = <0x80000>; /* 512kB */
+				cache-line-size = <64>;
+				/* 8 ways set associativity */
+				/* cache_size / (line_size/associativity) */
+				cache-sets = <1024>;
+				cache-unified;
+				next-level-cache = <&l3_0>;
+			};
+		};
+
+		l3_0: l3-0-cache { /* cluster private */
+			compatible = "cache";
+			cache-level = <3>;
+			cache-size = <0x200000>; /* 2MB */
+			cache-line-size = <64>;
+			/* 16 ways set associativity */
+			/* cache_size / (line_size/associativity) */
+			cache-sets = <2048>;
+			cache-unified;
+		};
+
+		idle-states {
+			entry-method = "psci";
+
+			CPU_RETENTION_0: cpu-retention-0 {
+				compatible = "arm,idle-state";
+				arm,psci-suspend-param = <0>;
+				local-timer-stop;
+				entry-latency-us = <300>;
+				exit-latency-us = <600>;
+				min-residency-us = <10000>;
+			};
+		};
+	};
+};
