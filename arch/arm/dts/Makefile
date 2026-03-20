@@ -452,6 +452,7 @@ dtb-$(CONFIG_ARCH_VERSAL) += \
 	versal-vpk120-revA.dtb \
 	versal-vpk120-revB.dtb \
 	versal-vpk180-revA.dtb \
+	versal-vpk360-revA.dtb \
 	versal-vp-x-a2785-00-revA.dtb \
 	versal-vr-r-a2488-01-revA.dtb \
 	versal-vrk160-revA.dtb \
