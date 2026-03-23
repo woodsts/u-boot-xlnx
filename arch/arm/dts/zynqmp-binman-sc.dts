@@ -69,7 +69,8 @@
 						   "zynqmp-sc-k24-revA-vr-r-a2488-01-revA",
 						   "zynqmp-sc-k24-revA-ve-x-a2112-00-revA",
 						   "zynqmp-sc-k24-revA-vrk160-revA",
-						   "zynqmp-sc-k24-revA-scu200-revA";
+						   "zynqmp-sc-k24-revA-scu200-revA",
+						   "zynqmp-sc-k24-revA-vpk360-revA";
 
 				images {
 					@fdt-SEQ {
@@ -107,6 +108,10 @@
 					conf-6 {
 						description = "*scu200*";
 						fdt = "fdt-6";
+					};
+					conf-7 {
+						description = "*vpk360*";
+						fdt = "fdt-7";
 					};
 				};
 			};
