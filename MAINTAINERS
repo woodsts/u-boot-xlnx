@@ -1802,6 +1802,11 @@ F:	drivers/tpm/
 F:	include/tpm*
 F:	lib/tpm*
 
+TPM2 AMD VERSAL GEN 2 DRIVER
+M:	Padmarao Begari <padmarao.begari@amd.com>
+S:	Maintained
+F:	drivers/tpm/tpm2_versal2_smc.c
+
 TQ GROUP
 #M:	Martin Krause <martin.krause@tq-systems.de>
 S:	Orphaned (Since 2016-02)
