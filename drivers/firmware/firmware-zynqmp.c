@@ -738,6 +738,19 @@ static int zynqmp_firmware_bind(struct udevice *dev)
 		}
 	}
 
+	if (IS_ENABLED(CONFIG_TPM2_VERSAL2_SMC)) {
+		ret = zynqmp_pm_xilocp_is_feature_supported(XOCP_API_EXTEND_HWPCR);
+		if (!ret)
+			ret = zynqmp_pm_xilocp_is_feature_supported(XOCP_API_GET_HWPCR);
+
+		if (!ret) {
+			ret = device_bind_driver(dev, "tpm2_versal2_smc",
+						 "tpm2_versal2_smc", &child);
+			if (ret)
+				printf("TPM2 Versal Gen 2 driver bind failed: %d\n", ret);
+		}
+	}
+
 	return 0;
 }
 
