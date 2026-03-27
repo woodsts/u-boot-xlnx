@@ -540,4 +540,28 @@ extern smc_call_handler_t __data smc_call_handler;
 
 #define PMC_GLOBAL_PGGS3_REG_NODE	0x1824C005
 
+/* XilOCP HW PCR API - Versal Gen 2 only */
+#define XILOCP_MODULE_ID		13U
+
+/*
+ * IPI payload header word passed as api_id to xilinx_pm_request().
+ *   bits [31:16] = payload length (number of arguments after the header)
+ *   bits [15:8]  = PLM module ID
+ *   bits [7:0]   = API function ID
+ *
+ * smc_call_enhanced() extracts module_id from bits[15:8] and fn_id from
+ * bits[7:0]; the len field is not encoded in the SMC call itself.
+ */
+#define PLM_IPI_HDR(len, module_id, api_id) \
+	(((u32)(len) << 16U) | ((u32)(module_id) << 8U) | (u32)(api_id))
+
+/* XilOCP API function IDs */
+#define XOCP_API_FEATURES		0U
+#define XOCP_API_EXTEND_HWPCR		1U
+#define XOCP_API_GET_HWPCR		2U
+
+int zynqmp_pm_xilocp_is_feature_supported(u32 api_id);
+int zynqmp_pm_xilocp_extend_hwpcr(u32 pcr_num, u64 hash_addr, u32 size);
+int zynqmp_pm_xilocp_get_hwpcr(u32 pcr_mask, u64 buf_addr, u32 buf_size);
+
 #endif /* _ZYNQMP_FIRMWARE_H_ */

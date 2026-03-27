@@ -3,7 +3,7 @@
  * Xilinx Zynq MPSoC Firmware driver
  *
  * Copyright (C) 2018-2019 Xilinx, Inc.
- * Copyright (C) 2022 - 2025, Advanced Micro Devices, Inc.
+ * Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
  */
 
 #include <asm/arch/hardware.h>
@@ -260,7 +260,77 @@ int zynqmp_pm_ufs_cal_reg(u32 *value)
 
 	return ret;
 }
-#endif
+
+/**
+ * zynqmp_pm_xilocp_is_feature_supported() - Query PLM XilOCP for API support.
+ * @api_id: XilOCP API function ID to check (e.g. XOCP_API_EXTEND_HWPCR)
+ *
+ * Sends XOCP_API_FEATURES (0) to PLM XilOCP with @api_id as the query
+ * argument.  PLM returns success if that API is compiled-in and available.
+ *
+ * Return: 0 if supported, PLM error code if not supported or call failed.
+ */
+int zynqmp_pm_xilocp_is_feature_supported(u32 api_id)
+{
+	return xilinx_pm_request(PLM_IPI_HDR(1, XILOCP_MODULE_ID, XOCP_API_FEATURES),
+				 api_id, 0, 0, 0, 0, 0, NULL);
+}
+
+/**
+ * zynqmp_pm_xilocp_extend_hwpcr() - Extend a Hardware PCR via PLM XilOCP.
+ * @pcr_num:   HW PCR index (0..7)
+ * @hash_addr: Physical address of the 48-byte hash buffer
+ *             (cache-flushed by caller)
+ * @size:      Buffer size in bytes (must be 48)
+ *
+ * Calls PLM XilOCP XOCP_API_EXTEND_HWPCR over the TF-A SMC PASS_THROUGH path.
+ *
+ * Return: 0 on success, PLM error code on failure.
+ */
+int zynqmp_pm_xilocp_extend_hwpcr(u32 pcr_num, u64 hash_addr, u32 size)
+{
+	int ret;
+
+	ret = xilinx_pm_request(PLM_IPI_HDR(4, XILOCP_MODULE_ID, XOCP_API_EXTEND_HWPCR),
+				pcr_num,
+				lower_32_bits(hash_addr),
+				upper_32_bits(hash_addr),
+				size, 0, 0, NULL);
+	if (ret)
+		printf("%s: HW PCR %u extend failed: %d\n",
+		       __func__, pcr_num, ret);
+
+	return ret;
+}
+
+/**
+ * zynqmp_pm_xilocp_get_hwpcr() - Read Hardware PCR value(s) via PLM XilOCP.
+ * @pcr_mask:  Bitmask of PCRs to read; bit N selects HW PCR N.
+ * @buf_addr:  Physical address of the output buffer (invalidated by caller)
+ * @buf_size:  Buffer size in bytes (48 * number of PCRs selected)
+ *
+ * Calls PLM XilOCP XOCP_API_GET_HWPCR over the TF-A SMC PASS_THROUGH path.
+ * PLM DMA-writes the PCR value(s) to buf_addr; caller must invalidate cache
+ * after this call before reading the buffer.
+ *
+ * Return: 0 on success, PLM error code on failure.
+ */
+int zynqmp_pm_xilocp_get_hwpcr(u32 pcr_mask, u64 buf_addr, u32 buf_size)
+{
+	int ret;
+
+	ret = xilinx_pm_request(PLM_IPI_HDR(4, XILOCP_MODULE_ID, XOCP_API_GET_HWPCR),
+				pcr_mask,
+				lower_32_bits(buf_addr),
+				upper_32_bits(buf_addr),
+				buf_size, 0, 0, NULL);
+	if (ret)
+		printf("%s: HW PCR mask 0x%x read failed: %d\n",
+		       __func__, pcr_mask, ret);
+
+	return ret;
+}
+#endif /* CONFIG_ARCH_VERSAL2 */
 
 #if defined(CONFIG_ARCH_VERSAL) || defined(CONFIG_ARCH_VERSAL2)
 u32 zynqmp_pm_get_pmc_global_pggs_reg(u32 reg_addr)
