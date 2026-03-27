@@ -47,6 +47,7 @@
 #include <zynqmp_firmware.h>
 
 #include <asm/cache.h>
+#include <dm/device_compat.h>
 #include <linux/bitops.h>
 #include <linux/string.h>
 #include <linux/unaligned/be_byteshift.h>
