@@ -33,6 +33,7 @@
 #endif
 
 #include <linux/log2.h>
+#include <linux/mtd/concat.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 
@@ -637,6 +638,13 @@ EXPORT_SYMBOL_GPL(mtd_device_parse_register);
 int mtd_device_unregister(struct mtd_info *master)
 {
 	int err;
+
+	/* Destroy concat before removing partitions */
+	if (IS_ENABLED(CONFIG_MTD_VIRT_CONCAT)) {
+		err = mtd_virt_concat_destroy(master);
+		if (err)
+			return err;
+	}
 
 	err = del_mtd_partitions(master);
 	if (err)

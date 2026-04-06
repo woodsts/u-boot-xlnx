@@ -10,6 +10,7 @@
 #include <dm/uclass-internal.h>
 #include <dm/uclass.h>
 #include <linux/err.h>
+#include <linux/mtd/concat.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <asm/global_data.h>
@@ -315,6 +316,7 @@ int mtd_probe_devices(void)
 	const char *mtdparts = get_mtdparts();
 	const char *mtdids = get_mtdids();
 	struct mtd_info *mtd;
+	int ret = 0;
 
 	mtd_probe_uclass_mtd_devs();
 	mtd_probe_uclass_spi_nor_devs();
@@ -357,6 +359,12 @@ int mtd_probe_devices(void)
 			printf("Failed parsing MTD partitions from mtdparts!\n");
 	}
 
+	if (IS_ENABLED(CONFIG_MTD_VIRT_CONCAT)) {
+		ret = mtd_virt_concat_node_create();
+		if (ret < 0)
+			log_err("Failed scanning DT concat groups\n");
+	}
+
 	/* Fallback to OF partitions */
 	mtd_for_each_device(mtd) {
 		if (list_empty(&mtd->partitions)) {
@@ -364,6 +372,11 @@ int mtd_probe_devices(void)
 				printf("Failed parsing MTD %s OF partitions!\n",
 					mtd->name);
 		}
+	}
+
+	if (IS_ENABLED(CONFIG_MTD_VIRT_CONCAT) && !ret) {
+		if (mtd_virt_concat_create_join() < 0)
+			log_err("Failed creating concat MTD devices\n");
 	}
 
 	/*

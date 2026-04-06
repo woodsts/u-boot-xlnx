@@ -27,6 +27,7 @@
 #include <linux/compat.h>
 #include <ubi_uboot.h>
 
+#include <linux/mtd/concat.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/err.h>
@@ -939,6 +940,17 @@ int add_mtd_partitions_of(struct mtd_info *master)
 		slave = allocate_partition(master, &part, i++, 0);
 		if (IS_ERR(slave))
 			return PTR_ERR(slave);
+
+		/* Intercept partitions for concat */
+		if (IS_ENABLED(CONFIG_MTD_VIRT_CONCAT)) {
+			/*
+			 * Store the DT node so that mtd_virt_concat_add() can
+			 * match this slave against the concat node list.
+			 */
+			slave->flash_node = child;
+			if (mtd_virt_concat_add(slave))
+				continue;
+		}
 
 		mutex_lock(&mtd_partitions_mutex);
 		list_add_tail(&slave->node, &master->partitions);
