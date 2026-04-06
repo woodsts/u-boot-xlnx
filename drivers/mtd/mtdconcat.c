@@ -26,25 +26,12 @@
 #include <linux/printk.h>
 #endif
 
-#include <linux/mtd/mtd.h>
 #include <linux/mtd/concat.h>
 
 #include <ubi_uboot.h>
 
 /*
- * Our storage structure:
- * Subdev points to an array of pointers to struct mtd_info objects
- * which is allocated along with this structure
- *
- */
-struct mtd_concat {
-	struct mtd_info mtd;
-	int num_subdev;
-	struct mtd_info **subdev;
-};
-
-/*
- * how to calculate the size required for the above structure,
+ * how to calculate the size required for struct mtd_concat,
  * including the pointer array subdev points to:
  */
 #define SIZEOF_STRUCT_MTD_CONCAT(num_subdev)	\
