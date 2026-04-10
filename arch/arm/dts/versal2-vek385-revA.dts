@@ -18,7 +18,7 @@
 	model = "AMD Versal VEK385 revA";
 
 	chosen {
-		bootargs = "earlycon=pl011,mmio32,0xf1930000 console=ttyAMA1,115200";
+		bootargs = "earlycon=pl011,mmio32,0xf1930000 console=ttyAMA1,115200 iommu.passthrough=1";
 		stdout-path = "serial1:115200n8";
 	};
 
