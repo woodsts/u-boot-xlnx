@@ -464,6 +464,10 @@ dtb-$(CONFIG_ARCH_VERSAL) += \
 	versal-x-ebm-02-revA.dtbo \
 	versal-x-ebm-03-revA.dtbo \
 	xilinx-versal-virt.dtb
+
+versal-vp-p-c3340-00-revA-x-fmc-02-revA-dtbs := versal-vp-p-c3340-00-revA.dtb x-fmc-02-revA.dtbo
+dtb-$(CONFIG_ARCH_VERSAL) += versal-vp-p-c3340-00-revA-x-fmc-02-revA.dtb
+
 dtb-$(CONFIG_ARCH_VERSAL2) += \
 	versal2-mini-emmc.dtb \
 	versal2-mini-ospi.dtb \
