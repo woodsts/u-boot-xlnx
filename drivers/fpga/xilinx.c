@@ -93,7 +93,8 @@ int fpga_loadbitstream(int devnum, char *fpgadata, size_t size,
 			       __func__);
 			printf("%s: Bitstream ID %s, current device ID %d/%s\n",
 			       __func__, dataptr, devnum, xdesc->name);
-			if (env_get_yesno("fpga_skip_idcheck") != 1)
+			if (!CONFIG_IS_ENABLED(ENV_SUPPORT) ||
+			    env_get_yesno("fpga_skip_idcheck") != 1)
 				return FPGA_FAIL;
 
 			printf("%s: Skipping ID check\n", __func__);
