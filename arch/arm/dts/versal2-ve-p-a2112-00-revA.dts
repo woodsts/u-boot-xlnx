@@ -15,7 +15,7 @@
 	model = "AMD Versal Gen 2 Silicon EL2";
 
 	chosen {
-		bootargs = "earlycon=pl011,mmio32,0xf1920000 console=ttyAMA0,115200 iommu.passthrough=1";
+		bootargs = "earlycon=pl011,mmio32,0xf1920000 console=ttyAMA0,115200";
 		stdout-path = "serial0:115200n8";
 	};
 
