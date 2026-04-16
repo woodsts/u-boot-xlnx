@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * dts file for Xilinx Versal VRK165-revA
+ *
+ * (C) Copyright 2026, Advanced Micro Devices, Inc.
+ *
+ * Michal Simek <michal.simek@amd.com>
+ */
+
+#include "versal-vrk160-revA.dts"
+
+/ {
+	compatible = "xlnx,versal-vrk165-revA", "xlnx,versal-vrk165",
+		     "xlnx,versal";
+	model = "Xilinx Versal VRK165 Eval board revA";
+};
