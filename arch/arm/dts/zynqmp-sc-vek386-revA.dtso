@@ -75,22 +75,22 @@
 					#size-cells = <0>;
 					reg = <0>;
 					/* pmbus1 */
-					 /* J1 connector */
-					 /* u247 mpq79500 0x5 */
-					 /* u248 mpq79500 0x6 */
-					 /* u249 mpq79500 0x7 */
-					 /* u256 mpq79730 0x8 */
-					 /* u254 mpq79730 0x9 */
-					 /* u255 mpq79730 0xa */
-					 /* u243 mpq79720 0xb */
-					 /* u245 mpq79720 0xc */
-					 /* u201 mpq2283 0x15 */
-					 /* u193 mpq2283 0x1a */
-					 /* u207 mpq2283 0x1c */
-					 /* u176 mpq2285 0x1d */
-					 /* u228 mpq72963 0x22 */
-					 /* u219 mpq72963 0x23 */
-					 /* u220 mpq72963 0x24 */
+					/* J1 connector */
+					/* u247 mpq79500 0x5 */
+					/* u248 mpq79500 0x6 */
+					/* u249 mpq79500 0x7 */
+					/* u256 mpq79730 0x8 */
+					/* u254 mpq79730 0x9 */
+					/* u255 mpq79730 0xa */
+					/* u243 mpq79720 0xb */
+					/* u245 mpq79720 0xc */
+					/* u201 mpq2283 0x15 */
+					/* u193 mpq2283 0x1a */
+					/* u207 mpq2283 0x1c */
+					/* u176 mpq2285 0x1d */
+					/* u228 mpq72963 0x22 */
+					/* u219 mpq72963 0x23 */
+					/* u220 mpq72963 0x24 */
 				};
 				pmbus2: i2c@1 {
 					#address-cells = <1>;
