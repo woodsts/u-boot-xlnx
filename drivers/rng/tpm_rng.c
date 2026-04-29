@@ -4,12 +4,20 @@
  */
 
 #include <dm.h>
+#include <log.h>
 #include <rng.h>
 #include <tpm_api.h>
 
 static int rng_tpm_random_read(struct udevice *dev, void *data, size_t count)
 {
-	return tpm_get_random(dev_get_parent(dev), data, count);
+	struct udevice *tpm_dev = dev_get_parent(dev);
+	u32 rc;
+
+	rc = tpm_auto_start(tpm_dev);
+	if (rc)
+		return log_msg_ret("start", -EIO);
+
+	return tpm_get_random(tpm_dev, data, count);
 }
 
 static const struct dm_rng_ops tpm_rng_ops = {
