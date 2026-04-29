@@ -93,7 +93,7 @@
 		bootph-all;
 		compatible = "arm,pl011", "arm,primecell";
 		status = "disabled";
-		reg = <0 0xed050000 0 0x10000>;
+		reg = <0 0xed050000 0 0x1000>;
 		interrupts = <0 185 4>;
 		reg-io-width = <4>;
 		clock-names = "uartclk", "apb_pclk";
@@ -105,7 +105,7 @@
 		bootph-all;
 		compatible = "arm,pl011", "arm,primecell";
 		status = "disabled";
-		reg = <0 0xed060000 0 0x10000>;
+		reg = <0 0xed060000 0 0x1000>;
 		interrupts = <0 186 4>;
 		reg-io-width = <4>;
 		clock-names = "uartclk", "apb_pclk";
@@ -117,7 +117,7 @@
 		bootph-all;
 		compatible = "arm,pl011", "arm,primecell";
 		status = "disabled";
-		reg = <0 0xed070000 0 0x10000>;
+		reg = <0 0xed070000 0 0x1000>;
 		interrupts = <0 187 4>;
 		reg-io-width = <4>;
 		clock-names = "uartclk", "apb_pclk";
