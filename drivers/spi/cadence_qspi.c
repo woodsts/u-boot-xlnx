@@ -674,7 +674,7 @@ static int cadence_spi_mem_exec_op(struct spi_slave *spi,
 	if (spi->flags & SPI_XFER_U_PAGE)
 		priv->cs = CQSPI_CS1;
 	else
-		priv->cs = CQSPI_CS0;
+		priv->cs = spi_chip_select(spi->dev);
 
 	/* Set Chip select */
 	cadence_qspi_apb_chipselect(base, priv->cs, priv->is_decoded_cs);

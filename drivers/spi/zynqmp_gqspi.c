@@ -860,7 +860,7 @@ static int zynqmp_qspi_exec_op(struct spi_slave *slave,
 	if (slave->flags & SPI_XFER_U_PAGE)
 		priv->u_page = 1;
 	else
-		priv->u_page = 0;
+		priv->u_page = spi_chip_select(slave->dev);
 
 	if ((slave->flags & GQSPI_SELECT_LOWER_CS) &&
 	    (slave->flags & GQSPI_SELECT_UPPER_CS))
