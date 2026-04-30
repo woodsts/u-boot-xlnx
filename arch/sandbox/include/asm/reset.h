@@ -19,6 +19,8 @@ int sandbox_reset_test_assert(struct udevice *dev);
 int sandbox_reset_test_assert_bulk(struct udevice *dev);
 int sandbox_reset_test_deassert(struct udevice *dev);
 int sandbox_reset_test_deassert_bulk(struct udevice *dev);
+int sandbox_reset_test_reset(struct udevice *dev);
+int sandbox_reset_test_reset_bulk(struct udevice *dev);
 int sandbox_reset_test_free(struct udevice *dev);
 int sandbox_reset_test_release_bulk(struct udevice *dev);
 
