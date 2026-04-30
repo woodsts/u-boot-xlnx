@@ -185,6 +185,14 @@
 	/* port 1/2 to connector */
 };
 
+&usb_mmi {
+	status = "okay";
+};
+
+&mmi_dwc3 {
+	status = "okay";
+};
+
 &i2c0 { /* PMC_MIO42-43 */
 	status = "okay";
 	/* board_i2c0 - FMC */
