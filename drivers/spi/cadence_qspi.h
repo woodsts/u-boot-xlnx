@@ -270,6 +270,8 @@
 
 #define CQSPI_IRQ_STATUS_MASK			GENMASK(16, 0)
 
+struct cadence_spi_priv;
+
 struct cadence_spi_plat {
 	unsigned int	max_hz;
 	void		*regbase;
@@ -290,6 +292,12 @@ struct cadence_spi_plat {
 	u32		tchsh_ns;
 	u32		tslch_ns;
 	u32		quirks;
+	int		(*reset)(struct udevice *dev);
+	int		(*read)(struct cadence_spi_priv *priv,
+				const struct spi_mem_op *op);
+	int		(*write)(struct cadence_spi_priv *priv,
+				 const struct spi_mem_op *op);
+	int		(*ctrl_reset)(struct cadence_spi_priv *priv);
 };
 
 struct cadence_spi_priv {
@@ -328,7 +336,12 @@ struct cadence_spi_priv {
 	bool		ddr_init;
 	bool		is_decoded_cs;
 	bool		use_dac_mode;
-	bool		is_dma;
+	int		(*reset)(struct udevice *dev);
+	int		(*read)(struct cadence_spi_priv *priv,
+				const struct spi_mem_op *op);
+	int		(*write)(struct cadence_spi_priv *priv,
+				 const struct spi_mem_op *op);
+	int		(*ctrl_reset)(struct cadence_spi_priv *priv);
 
 	/* Transaction protocol parameters. */
 	u8		inst_width;
@@ -340,6 +353,12 @@ struct cadence_spi_priv {
 struct cqspi_driver_platdata {
 	u32 hwcaps_mask;
 	u32 quirks;
+	int (*reset)(struct udevice *dev);
+	int (*read)(struct cadence_spi_priv *priv,
+		    const struct spi_mem_op *op);
+	int (*write)(struct cadence_spi_priv *priv,
+		     const struct spi_mem_op *op);
+	int (*ctrl_reset)(struct cadence_spi_priv *priv);
 };
 
 /* Functions call declaration */
@@ -379,17 +398,35 @@ void cadence_qspi_apb_enter_xip(void *reg_base, char xip_dummy);
 void cadence_qspi_apb_readdata_capture(void *reg_base,
 	unsigned int bypass, unsigned int delay);
 unsigned int cm_get_qspi_controller_clk_hz(void);
-int cadence_qspi_apb_dma_read(struct cadence_spi_priv *priv,
-			      const struct spi_mem_op *op);
 int cadence_qspi_apb_wait_for_dma_cmplt(struct cadence_spi_priv *priv);
 int cadence_qspi_apb_exec_flash_cmd(void *reg_base, unsigned int reg);
-int cadence_qspi_flash_reset(struct udevice *dev);
 int cadence_qspi_set_dll_mode(struct udevice *dev);
 void cadence_qspi_apb_enable_linear_mode(bool enable);
 int cadence_device_reset(struct udevice *dev);
 int cadence_qspi_setup_opcode_ext(struct cadence_spi_priv *priv,
 				  const struct spi_mem_op *op,
 				  unsigned int shift);
+
+/* Platform-specific hooks (cadence_ospi_versal.c) */
+
+#if IS_ENABLED(CONFIG_CADENCE_OSPI_VERSAL)
+int cadence_qspi_apb_dma_read(struct cadence_spi_priv *priv,
+			      const struct spi_mem_op *op);
 int cadence_spi_versal_ctrl_reset(struct cadence_spi_priv *priv);
+#if !CONFIG_IS_ENABLED(DM_GPIO)
+int cadence_qspi_flash_reset(struct udevice *dev);
+#endif
+#else
+static inline int cadence_qspi_apb_dma_read(struct cadence_spi_priv *priv,
+					    const struct spi_mem_op *op)
+{
+	return 0;
+}
+
+static inline int cadence_spi_versal_ctrl_reset(struct cadence_spi_priv *priv)
+{
+	return 0;
+}
+#endif /* CONFIG_CADENCE_OSPI_VERSAL */
 
 #endif /* __CADENCE_QSPI_H__ */

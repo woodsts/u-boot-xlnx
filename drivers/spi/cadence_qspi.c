@@ -28,23 +28,6 @@
 
 /* Quirks */
 #define CQSPI_DISABLE_STIG_MODE		BIT(0)
-#define CQSPI_DMA_MODE			BIT(1)
-
-__weak int cadence_qspi_apb_dma_read(struct cadence_spi_priv *priv,
-				     const struct spi_mem_op *op)
-{
-	return 0;
-}
-
-__weak int cadence_qspi_flash_reset(struct udevice *dev)
-{
-	return 0;
-}
-
-__weak int cadence_spi_versal_ctrl_reset(struct cadence_spi_priv *priv)
-{
-	return 0;
-}
 
 static int cadence_spi_write_speed(struct udevice *bus, uint hz)
 {
@@ -244,10 +227,14 @@ static int cadence_spi_probe(struct udevice *bus)
 	priv->tchsh_ns		= plat->tchsh_ns;
 	priv->tslch_ns		= plat->tslch_ns;
 	priv->quirks		= plat->quirks;
+	priv->reset		= plat->reset;
+	priv->read		= plat->read;
+	priv->write		= plat->write;
+	priv->ctrl_reset	= plat->ctrl_reset;
 
-	if (priv->quirks & CQSPI_DMA_MODE) {
-		priv->is_dma = true;
-		debug("Cadence QSPI: DMA mode enabled\n");
+	if (!priv->read || !priv->write) {
+		dev_err(bus, "read/write hooks are mandatory\n");
+		return -EINVAL;
 	}
 
 	if (IS_ENABLED(CONFIG_ZYNQMP_FIRMWARE))
@@ -295,11 +282,10 @@ static int cadence_spi_probe(struct udevice *bus)
 
 	priv->wr_delay = 50 * DIV_ROUND_UP(NSEC_PER_SEC, priv->ref_clk_hz);
 
-	if (device_is_compatible(bus, "amd,versal2-ospi"))
-		return cadence_device_reset(bus);
+	if (priv->reset)
+		return priv->reset(bus);
 
-	/* Reset ospi flash device */
-	return cadence_qspi_flash_reset(bus);
+	return 0;
 }
 
 static int cadence_spi_remove(struct udevice *dev)
@@ -620,10 +606,12 @@ static int cadence_spi_setup_strmode(struct udevice *bus)
 		return 0;
 
 	/* Reset ospi controller */
-	ret = cadence_spi_versal_ctrl_reset(priv);
-	if (ret) {
-		printf("Cadence ctrl reset failed err: %d\n", ret);
-		return ret;
+	if (priv->ctrl_reset) {
+		ret = priv->ctrl_reset(priv);
+		if (ret) {
+			dev_err(bus, "ctrl reset failed err: %d\n", ret);
+			return ret;
+		}
 	}
 
 	ret = wait_for_bit_le32(base + CQSPI_REG_CONFIG,
@@ -707,17 +695,13 @@ static int cadence_spi_mem_exec_op(struct spi_slave *spi,
 		break;
 	case CQSPI_READ:
 		err = cadence_qspi_apb_read_setup(priv, op);
-		if (!err) {
-			if (priv->is_dma)
-				err = cadence_qspi_apb_dma_read(priv, op);
-			else
-				err = cadence_qspi_apb_read_execute(priv, op);
-		}
+		if (!err)
+			err = priv->read(priv, op);
 		break;
 	case CQSPI_WRITE:
 		err = cadence_qspi_apb_write_setup(priv, op);
 		if (!err)
-			err = cadence_qspi_apb_write_execute(priv, op);
+			err = priv->write(priv, op);
 		break;
 	default:
 		err = -1;
@@ -776,6 +760,7 @@ static int cadence_spi_of_to_plat(struct udevice *bus)
 {
 	struct cadence_spi_plat *plat = dev_get_plat(bus);
 	struct cadence_spi_priv *priv = dev_get_priv(bus);
+	const struct cqspi_driver_platdata *drvdata;
 	ofnode subnode;
 
 	plat->regbase = devfdt_get_addr_index_ptr(bus, 0);
@@ -819,9 +804,14 @@ static int cadence_spi_of_to_plat(struct udevice *bus)
 	plat->read_delay = ofnode_read_s32_default(subnode, "cdns,read-delay",
 						   -1);
 
-	const struct cqspi_driver_platdata *drvdata =
-		(struct cqspi_driver_platdata *)dev_get_driver_data(bus);
-	plat->quirks = drvdata->quirks;
+	drvdata = (const struct cqspi_driver_platdata *)dev_get_driver_data(bus);
+	if (drvdata) {
+		plat->quirks		= drvdata->quirks;
+		plat->reset		= drvdata->reset;
+		plat->read		= drvdata->read;
+		plat->write		= drvdata->write;
+		plat->ctrl_reset	= drvdata->ctrl_reset;
+	}
 
 	debug("%s: regbase=%p ahbbase=%p max-frequency=%d page-size=%d\n",
 	      __func__, plat->regbase, plat->ahbbase, plat->max_hz,
@@ -847,10 +837,29 @@ static const struct dm_spi_ops cadence_spi_ops = {
 
 static const struct cqspi_driver_platdata cdns_qspi = {
 	.quirks = CQSPI_DISABLE_STIG_MODE,
+	.read = cadence_qspi_apb_read_execute,
+	.write = cadence_qspi_apb_write_execute,
+};
+
+static const struct cqspi_driver_platdata cdns_ti_qspi = {
+	.read = cadence_qspi_apb_read_execute,
+	.write = cadence_qspi_apb_write_execute,
 };
 
 static const struct cqspi_driver_platdata cdns_xilinx_qspi = {
-	.quirks = CQSPI_DMA_MODE,
+#if !CONFIG_IS_ENABLED(DM_GPIO) && IS_ENABLED(CONFIG_CADENCE_OSPI_VERSAL)
+	.reset = cadence_qspi_flash_reset,
+#endif
+	.read = cadence_qspi_apb_dma_read,
+	.write = cadence_qspi_apb_write_execute,
+	.ctrl_reset = cadence_spi_versal_ctrl_reset,
+};
+
+static const struct cqspi_driver_platdata cdns_versal2_qspi = {
+	.reset = cadence_device_reset,
+	.read = cadence_qspi_apb_dma_read,
+	.write = cadence_qspi_apb_write_execute,
+	.ctrl_reset = cadence_spi_versal_ctrl_reset,
 };
 
 static const struct udevice_id cadence_spi_ids[] = {
@@ -859,11 +868,12 @@ static const struct udevice_id cadence_spi_ids[] = {
 		.data = (ulong)&cdns_qspi,
 	},
 	{
-		.compatible = "ti,am654-ospi"
+		.compatible = "ti,am654-ospi",
+		.data = (ulong)&cdns_ti_qspi,
 	},
 	{
 		.compatible = "amd,versal2-ospi",
-		.data = (ulong)&cdns_xilinx_qspi,
+		.data = (ulong)&cdns_versal2_qspi,
 	},
 	{
 		.compatible = "xlnx,versal-ospi-1.0",
