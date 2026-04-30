@@ -1053,3 +1053,22 @@ void cadence_qspi_apb_enter_xip(void *reg_base, char xip_dummy)
 	reg |= (1 << CQSPI_REG_RD_INSTR_MODE_EN_LSB);
 	writel(reg, reg_base + CQSPI_REG_RD_INSTR);
 }
+
+int cadence_device_reset(struct udevice *dev)
+{
+	struct cadence_spi_priv *priv = dev_get_priv(dev);
+	u32 reg;
+
+	reg = readl(priv->regbase + CQSPI_REG_CONFIG);
+	reg |= CQSPI_REG_CONFIG_RESET_CFG_FLD_MASK;
+	writel(reg, priv->regbase + CQSPI_REG_CONFIG);
+
+	writel(reg & ~CQSPI_REG_CONFIG_RESET_PIN_FLD_MASK, priv->regbase + CQSPI_REG_CONFIG);
+	udelay(5);
+	writel(reg | CQSPI_REG_CONFIG_RESET_PIN_FLD_MASK, priv->regbase + CQSPI_REG_CONFIG);
+	udelay(150);
+	writel(reg & ~CQSPI_REG_CONFIG_RESET_PIN_FLD_MASK, priv->regbase + CQSPI_REG_CONFIG);
+	udelay(1200);
+
+	return 0;
+}
