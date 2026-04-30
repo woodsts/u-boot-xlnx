@@ -27,7 +27,7 @@
 	};
 
 	memory@0 {
-		reg = <0 0 0 0x80000000>; /* Only 2GB for now */
+		reg = <0 0 0 0x80000000>, <0x8 0 0 0x80000000>;
 		device_type = "memory";
 	};
 
