@@ -167,6 +167,18 @@ config SPL_PINCONF_RECURSIVE
 
 if PINCTRL || SPL_PINCTRL
 
+config PINCTRL_AMD_PMC
+	bool "AMD PMC pin control driver"
+	depends on DM && PINCTRL_FULL
+	select REGMAP
+	select SYSCON
+	help
+	  Support pin multiplexing control on AMD PMC (Platform Management
+	  Controller) subsystem, accessed via PL-to-PMC AXI bridge. Used on
+	  MicroBlaze V and similar soft processor configurations. Uses
+	  regmap/syscon to share register access with clock and reset
+	  drivers.
+
 config PINCTRL_APPLE
 	bool "Apple pinctrl driver"
 	depends on DM && PINCTRL_GENERIC && ARCH_APPLE

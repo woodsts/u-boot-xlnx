@@ -1334,6 +1334,7 @@ F:	drivers/clk/clk-amd-pmc.c
 F:	drivers/gpio/xilinx_gpio.c
 F:	drivers/net/xilinx_axi_emac.c
 F:	drivers/net/xilinx_emaclite.c
+F:	drivers/pinctrl/pinctrl-amd-pmc.c
 F:	drivers/reset/reset-amd-pmc.c
 F:	drivers/serial/serial_xuartlite.c
 F:	drivers/spi/xilinx_spi.c
