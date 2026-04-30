@@ -284,7 +284,7 @@ static int cadence_spi_probe(struct udevice *bus)
 
 	priv->resets = devm_reset_bulk_get_optional(bus);
 	if (priv->resets)
-		reset_deassert_bulk(priv->resets);
+		reset_reset_bulk(priv->resets);
 
 	if (!priv->qspi_is_init) {
 		cadence_qspi_apb_controller_init(priv);
