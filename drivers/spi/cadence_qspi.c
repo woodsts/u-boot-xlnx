@@ -46,11 +46,6 @@ __weak int cadence_spi_versal_ctrl_reset(struct cadence_spi_priv *priv)
 	return 0;
 }
 
-__weak ofnode cadence_qspi_get_subnode(struct udevice *dev)
-{
-	return dev_read_first_subnode(dev);
-}
-
 static int cadence_spi_write_speed(struct udevice *bus, uint hz)
 {
 	struct cadence_spi_priv *priv = dev_get_priv(bus);
@@ -796,7 +791,7 @@ static int cadence_spi_of_to_plat(struct udevice *bus)
 		priv->use_dac_mode = true;
 
 	/* All other parameters are embedded in the child node */
-	subnode = cadence_qspi_get_subnode(bus);
+	subnode = dev_read_first_subnode(bus);
 	if (!ofnode_valid(subnode)) {
 		printf("Error: subnode with SPI flash config missing!\n");
 		return -ENODEV;
