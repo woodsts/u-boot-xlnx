@@ -28,6 +28,85 @@
 
 /* Quirks */
 #define CQSPI_DISABLE_STIG_MODE		BIT(0)
+#define CQSPI_USE_STIG_MODE		BIT(1)
+
+/**
+ * cadence_qspi_stig_read() - chunked STIG bulk read (<=8 bytes per APB
+ * transaction). Used when the AHB data window is unavailable.
+ *
+ * @priv: pointer to the Cadence QSPI private data
+ * @op: pointer to the SPI memory operation to execute
+ *
+ * Return: 0 on success, negative error code on failure
+ */
+static int cadence_qspi_stig_read(struct cadence_spi_priv *priv,
+				  const struct spi_mem_op *op)
+{
+	u8 data_buf[CQSPI_STIG_DATA_LEN_MAX];
+	size_t remaining = op->data.nbytes;
+	u8 *buf = op->data.buf.in;
+	u64 from = op->addr.val;
+	int ret;
+
+	while (remaining > 0) {
+		size_t chunk = min_t(size_t, remaining, CQSPI_STIG_DATA_LEN_MAX);
+		struct spi_mem_op stig_op = *op;
+
+		stig_op.addr.val    = from;
+		stig_op.data.nbytes = chunk;
+		stig_op.data.buf.in = buf;
+
+		/*
+		 * The APB STIG helper rounds DTR reads up to an even byte count.
+		 * Read the padded byte into a bounce buffer and copy only the
+		 * caller-requested payload back out.
+		 */
+		if (stig_op.data.dtr && (chunk % 2)) {
+			stig_op.data.nbytes++;
+			stig_op.data.buf.in = data_buf;
+		}
+
+		ret = cadence_qspi_apb_command_read_setup(priv, &stig_op);
+		if (ret)
+			return ret;
+		ret = cadence_qspi_apb_command_read(priv, &stig_op);
+		if (ret)
+			return ret;
+		if (stig_op.data.buf.in == data_buf)
+			memcpy(buf, data_buf, chunk);
+
+		buf       += chunk;
+		from      += chunk;
+		remaining -= chunk;
+	}
+
+	return 0;
+}
+
+/**
+ * cadence_qspi_stig_write() - single STIG write per op. WREN and WIP
+ * sequencing are delegated to the SPI-NOR core; adjust_op_size() limits
+ * each call to CQSPI_STIG_DATA_LEN_MAX bytes.
+ *
+ * @priv: pointer to the Cadence QSPI private data
+ * @op: pointer to the SPI memory operation to execute
+ *
+ * Return: 0 on success, negative error code on failure
+ */
+static int cadence_qspi_stig_write(struct cadence_spi_priv *priv,
+				   const struct spi_mem_op *op)
+{
+	int ret;
+
+	if (op->data.nbytes > CQSPI_STIG_DATA_LEN_MAX)
+		return -EOPNOTSUPP;
+
+	ret = cadence_qspi_apb_command_write_setup(priv, op);
+	if (ret)
+		return ret;
+
+	return cadence_qspi_apb_command_write(priv, op);
+}
 
 static int cadence_spi_write_speed(struct udevice *bus, uint hz)
 {
@@ -638,6 +717,28 @@ static int cadence_spi_setup_strmode(struct udevice *bus)
 	return 0;
 }
 
+/**
+ * cadence_spi_mem_adjust_op_size() - cap transfer size for STIG-mode platforms
+ *
+ * @slave: pointer to the SPI slave device
+ * @op: pointer to the SPI memory operation to adjust
+ *
+ * Return: 0 on success, negative error code on failure
+ */
+static int cadence_spi_mem_adjust_op_size(struct spi_slave *slave,
+					  struct spi_mem_op *op)
+{
+	struct cadence_spi_priv *priv = dev_get_priv(slave->dev->parent);
+
+	if (!(priv->quirks & CQSPI_USE_STIG_MODE) || !op->data.nbytes)
+		return 0;
+
+	op->data.nbytes = min_t(unsigned int, op->data.nbytes,
+				CQSPI_STIG_DATA_LEN_MAX);
+
+	return 0;
+}
+
 static int cadence_spi_mem_exec_op(struct spi_slave *spi,
 				   const struct spi_mem_op *op)
 {
@@ -821,6 +922,7 @@ static int cadence_spi_of_to_plat(struct udevice *bus)
 }
 
 static const struct spi_controller_mem_ops cadence_spi_mem_ops = {
+	.adjust_op_size = cadence_spi_mem_adjust_op_size,
 	.exec_op = cadence_spi_mem_exec_op,
 	.supports_op = cadence_spi_mem_supports_op,
 };
@@ -862,6 +964,18 @@ static const struct cqspi_driver_platdata cdns_versal2_qspi = {
 	.ctrl_reset = cadence_spi_versal_ctrl_reset,
 };
 
+/*
+ * PMC OSPI: the AHB data window is unreachable through the PL->PMC bridge,
+ * so all bulk transfers use STIG via the APB command registers.
+ */
+static const struct cqspi_driver_platdata cdns_pmc_ospi = {
+	.quirks = CQSPI_USE_STIG_MODE,
+	.reset = cadence_device_reset,
+	.read = cadence_qspi_stig_read,
+	.write = cadence_qspi_stig_write,
+	.ctrl_reset = cadence_qspi_pmc_ctrl_reset,
+};
+
 static const struct udevice_id cadence_spi_ids[] = {
 	{
 		.compatible = "cdns,qspi-nor",
@@ -878,6 +992,10 @@ static const struct udevice_id cadence_spi_ids[] = {
 	{
 		.compatible = "xlnx,versal-ospi-1.0",
 		.data = (ulong)&cdns_xilinx_qspi,
+	},
+	{
+		.compatible = "amd,pmc-ospi",
+		.data = (ulong)&cdns_pmc_ospi,
 	},
 	{ }
 };

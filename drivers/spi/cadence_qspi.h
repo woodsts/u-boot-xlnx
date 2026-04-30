@@ -429,4 +429,14 @@ static inline int cadence_spi_versal_ctrl_reset(struct cadence_spi_priv *priv)
 }
 #endif /* CONFIG_CADENCE_OSPI_VERSAL */
 
+/* Platform-specific hooks (cadence_ospi_pmc.c) */
+#if IS_ENABLED(CONFIG_CADENCE_OSPI_PMC)
+int cadence_qspi_pmc_ctrl_reset(struct cadence_spi_priv *priv);
+#else
+static inline int cadence_qspi_pmc_ctrl_reset(struct cadence_spi_priv *priv)
+{
+	return 0;
+}
+#endif /* CONFIG_CADENCE_OSPI_PMC */
+
 #endif /* __CADENCE_QSPI_H__ */

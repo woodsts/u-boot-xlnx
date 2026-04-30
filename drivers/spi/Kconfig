@@ -180,6 +180,27 @@ config CADENCE_OSPI_VERSAL
 	  This option is used to enable Versal OSPI DMA operations which
 	  are used for ospi flash read using cadence qspi controller.
 
+config CADENCE_OSPI_PMC
+	bool "Cadence OSPI PMC platform support"
+	depends on CADENCE_QSPI
+	select CLK
+	select CLK_AMD_PMC
+	select DM_RESET
+	select RESET_AMD_PMC
+	select PINCTRL
+	select PINCTRL_AMD_PMC
+	help
+	  Enable platform support for the Cadence OSPI controller when
+	  accessed through the PL-to-PMC AXI32 bridge, for example on
+	  systems using the "amd,pmc-ospi" compatible string.
+
+	  All bulk transfers use the STIG path via the APB command
+	  registers because the AHB data window is not reachable through
+	  this bridge.
+
+	  This selects the AMD PMC clock, reset, and pinctrl drivers
+	  required for proper hardware initialization.
+
 config CADENCE_XSPI
 	bool "Cadence XSPI driver (Experimental feature)"
 	help
