@@ -77,6 +77,17 @@ struct reset_ops {
 	 */
 	int (*rst_deassert)(struct reset_ctl *reset_ctl);
 	/**
+	 * rst_reset - Reset a HW module.
+	 *
+	 * This optional function triggers a reset pulse on the reset line,
+	 * asserting and then deasserting the reset signal. If not implemented,
+	 * the reset core will use rst_assert followed by rst_deassert.
+	 *
+	 * @reset_ctl:	The reset signal to pulse.
+	 * @return 0 if OK, or a negative error code.
+	 */
+	int (*rst_reset)(struct reset_ctl *reset_ctl);
+	/**
 	 * rst_status - Check reset signal status.
 	 *
 	 * @reset_ctl:	The reset signal to check.

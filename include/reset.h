@@ -321,6 +321,31 @@ int reset_deassert(struct reset_ctl *reset_ctl);
 int reset_deassert_bulk(struct reset_ctl_bulk *bulk);
 
 /**
+ * reset_reset - Reset a HW module by asserting and deasserting a reset signal.
+ *
+ * This function will assert and then deassert the specified reset signal,
+ * thus resetting the affected HW module. This is a convenience function
+ * that combines reset_assert() and reset_deassert().
+ *
+ * @reset_ctl:	A reset control struct that was previously successfully
+ *		requested by reset_get_by_*().
+ * Return: 0 if OK, or a negative error code.
+ */
+int reset_reset(struct reset_ctl *reset_ctl);
+
+/**
+ * reset_reset_bulk - Reset all HW modules in a reset control bulk struct.
+ *
+ * This function will assert and then deassert all reset signals in the
+ * specified reset control bulk struct, thus resetting all affected HW modules.
+ *
+ * @bulk:	A reset control bulk struct that was previously successfully
+ *		requested by reset_get_bulk().
+ * Return: 0 if OK, or a negative error code.
+ */
+int reset_reset_bulk(struct reset_ctl_bulk *bulk);
+
+/**
  * rst_status - Check reset signal status.
  *
  * @reset_ctl:	The reset signal to check.
@@ -439,6 +464,16 @@ static inline int reset_deassert(struct reset_ctl *reset_ctl)
 }
 
 static inline int reset_deassert_bulk(struct reset_ctl_bulk *bulk)
+{
+	return 0;
+}
+
+static inline int reset_reset(struct reset_ctl *reset_ctl)
+{
+	return 0;
+}
+
+static inline int reset_reset_bulk(struct reset_ctl_bulk *bulk)
 {
 	return 0;
 }
