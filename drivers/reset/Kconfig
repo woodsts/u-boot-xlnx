@@ -49,6 +49,16 @@ config RESET_AIROHA
 	help
 	  Support for reset controller on Airoha SoCs.
 
+config RESET_AMD_PMC
+	bool "Reset driver for AMD PMC"
+	depends on DM_RESET
+	select REGMAP
+	select SYSCON
+	help
+	  Support for reset controller in the AMD PMC (Platform Management
+	  Controller) subsystem, accessed via PL-to-PMC AXI bridge. Used on
+	  MicroBlaze V and similar soft processor configurations.
+
 config RESET_TI_SCI
 	bool "TI System Control Interface (TI SCI) reset driver"
 	depends on DM_RESET && TI_SCI_PROTOCOL
