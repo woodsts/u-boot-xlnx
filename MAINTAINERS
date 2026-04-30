@@ -1330,6 +1330,7 @@ S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-microblaze.git
 F:	arch/microblaze/
 F:	cmd/mfsl.c
+F:	drivers/clk/clk-amd-pmc.c
 F:	drivers/gpio/xilinx_gpio.c
 F:	drivers/net/xilinx_axi_emac.c
 F:	drivers/net/xilinx_emaclite.c

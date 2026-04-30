@@ -113,6 +113,18 @@ config CLK_STUB
 	  Enable this to provide a stub clock driver for non-essential clock
 	  controllers.
 
+config CLK_AMD_PMC
+	bool "Enable clock driver for AMD PMC"
+	depends on CLK
+	select REGMAP
+	select SYSCON
+	help
+	  This clock driver adds support for clock control in the AMD PMC
+	  (Platform Management Controller) subsystem, accessed via PL-to-PMC
+	  AXI bridge. Used on MicroBlaze V and similar soft processor
+	  configurations. Uses regmap/syscon to share register access with
+	  reset and pinctrl drivers.
+
 config CLK_BCM6345
 	bool "Clock controller driver for BCM6345"
 	depends on CLK && ARCH_BMIPS
