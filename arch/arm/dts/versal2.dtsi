@@ -428,6 +428,7 @@
 		i2c5 = &i2c5;
 		i2c6 = &i2c6;
 		i2c7 = &i2c7;
+		i2c8 = &i2c8;
 		spi0 = &ospi;
 		spi1 = &qspi;
 		spi2 = &spi0;
@@ -1009,6 +1010,13 @@
 			interrupts = <0 102 0x04>;
 		};
 
+		i2c8: i2c@f1000000 {
+			compatible = "cdns,i2c-r1p14";
+			status = "disabled";
+			reg = <0 0xf1000000 0 0x1000>;
+			interrupts = <0 203 4>;
+		};
+
 		i3c0: i3c@f1948000 {
 			compatible = "snps,dw-i3c-master-1.00a";
 			status = "disabled";
@@ -1330,6 +1338,16 @@
 				clock-names = "ref";
 				dma-coherent;
 			};
+		};
+
+		usb3_dp_phy: phy@edeb8000 {
+			compatible = "amd,versal2-usbc31-dptx-phy";
+			status = "disabled";
+			reg = <0x0 0xede40000 0x0 0x40000
+			       0x0 0xedeb8000 0x0 0x4000>;
+			reg-names = "crpara", "tca";
+			#phy-cells = <1>;
+			orientation-switch;
 		};
 
 		mdb_pcie0: pcie@ed931000 {

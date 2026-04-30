@@ -326,6 +326,11 @@
 	power-domains = <&versal2_firmware PM_DEV_I2C_7>;
 };
 
+&i2c8 {
+	clocks = <&versal2_clk I2C_REF>;
+	power-domains = <&versal2_firmware PM_DEV_I2C_PMC>;
+};
+
 &i3c0 {
 	clocks = <&versal2_clk I3C0_REF>;
 	power-domains = <&versal2_firmware PM_DEV_I2C_0>;
