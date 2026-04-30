@@ -35,7 +35,7 @@ EFI_LDS			:= elf_riscv64_efi.lds
 PLATFORM_ELFFLAGS	+= -B riscv -O elf64-$(large-endian)riscv
 endif
 
-PLATFORM_CPPFLAGS	+= -ffixed-x3 -fpic
+PLATFORM_CPPFLAGS	+= -ffixed-x3 $(if $(CONFIG_XPL_BUILD),,-fpic)
 PLATFORM_RELFLAGS	+= -fno-common -ffunction-sections -fdata-sections
 LDFLAGS_u-boot		+= --gc-sections -static -pie
 
