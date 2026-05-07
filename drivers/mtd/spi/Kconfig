@@ -214,10 +214,14 @@ config SPI_FLASH_MT35XU
 
 config SPI_FLASH_DTR_ENABLE
 	bool "Enable Flash DTR support"
+	depends on !(ARCH_VERSAL_NET && MTD_VIRT_CONCAT)
 	help
 	  Select this config to enable DTR mode by spi-nor framework.
 	  This config provides an option to explicitly enable/disable the DTR
 	  support even though the flash id flags specify flash supports DTR mode.
+
+	  Note: This option is not available on Versal NET when MTD_VIRT_CONCAT
+	  is enabled, as the combination is not supported.
 
 config SPI_FLASH_SST
 	bool "SST SPI flash support"
