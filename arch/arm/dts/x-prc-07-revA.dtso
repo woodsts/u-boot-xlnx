@@ -58,8 +58,8 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 
-	mt35xu02g: flash@0 { /* u97/u390 mt35xu02gcba */
-		compatible = "mt35xu02g", "micron,m25p80", "jedec,spi-nor";
+	flash@0 { /* u97/u390 mt35xu02gcba */
+		compatible = "micron,m25p80", "jedec,spi-nor";
 		reg = <0>, <1>;
 		stacked-memories = /bits/ 64 <0x8000000 0x8000000>; /* 128MB */
 		cdns,read-delay = <0>;
