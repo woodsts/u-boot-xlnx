@@ -2,7 +2,7 @@
 /*
  * dts file for Xilinx X-PRC-10 RevA
  *
- * (C) Copyright 2024 - 2025, Advanced Micro Devices, Inc.
+ * (C) Copyright 2024 - 2026, Advanced Micro Devices, Inc.
  *
  * Michal Simek <michal.simek@amd.com>
  */
@@ -138,7 +138,6 @@
 			#size-cells = <0>;
 
 			phy0: ethernet-phy@1 { /* u128 */
-				#phy-cells = <1>;
 				reg = <1>;
 				compatible = "ethernet-phy-id2000.a231";
 				ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_25_NS>;
