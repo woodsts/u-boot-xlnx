@@ -2,7 +2,7 @@
 /*
  * dts file for Xilinx ZynqMP VR-R-A2488-01-revA
  *
- * Copyright (C) 2024 - 2025, Advanced Micro Devices, Inc.
+ * Copyright (C) 2024 - 2026, Advanced Micro Devices, Inc.
  *
  * Michal Simek <michal.simek@amd.com>
  */
@@ -242,7 +242,6 @@
 		#size-cells = <0>;
 
 		phy0: ethernet-phy@8 { /* ADI1300 - u500 */
-			#phy-cells = <1>;
 			compatible = "ethernet-phy-id0283.bc30";
 			reg = <8>;
 			adi,rx-internal-delay-ps = <2400>;
