@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * dts file for SC on VRK160 revA (k24)
+ * dts file for SC on VRK160 revB (k24)
  *
  * (C) Copyright 2025 - 2026, Advanced Micro Devices, Inc.
  *
@@ -11,9 +11,9 @@
 /plugin/;
 
 &{/} {
-	compatible = "xlnx,zynqmp-sc-vrk160-revA",
+	compatible = "xlnx,zynqmp-sc-vrk160-revB",
 		     "xlnx,zynqmp-sc-vrk160", "xlnx,zynqmp";
-	model = "ZynqMP SC VRK160 revA";
+	model = "ZynqMP SC VRK160 revB";
 };
 
 &i2c0 { /* I2C_SCK C23/C24 - MIO 66/67 */
@@ -67,7 +67,7 @@
 						"SFP_01_RS0", "SFP_01_RS1", "", ""; /* 14 - 17 */
 			};
 
-			i2cmux0: i2c-mux@71 { /* u162 */
+			i2cmux1: i2c-mux@71 { /* u19 */
 				compatible = "nxp,pca9548";
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -187,64 +187,63 @@
 				};
 			};
 
-			i2cmux1: i2c-mux@77 { /* u20 */
+			i2cmux2: i2c-mux@77 { /* u20 */
 				compatible = "nxp,pca9548";
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <0x77>;
-				i2cmux1_0: i2c@0 {
+				i2cmux2_0: i2c@0 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <0>;
-					/* qsfp1 */
+					/* nc */
 				};
-				i2cmux1_1: i2c@1 {
+				i2cmux2_1: i2c@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <1>;
-					/* sfp_04 */
+					/* nc */
 				};
-				i2cmux1_2: i2c@2 {
+				i2cmux2_2: i2c@2 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <2>;
-					/* pmbus5_ina */
-					/* u228 ina700a 0x46 dac_avccaux */
-					/* u229 ina700a 0x47 adc_avccaux */
+					/* pmbus_seq */
+					/* u167 ucd90320 0x73 */
+					/* j163 connector */
 				};
-				i2cmux1_3: i2c@3 {
+				i2cmux2_3: i2c@3 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <3>;
-					/* pmbus6_ina */
-					/* u230 ina700a 0x44 gtm_avccaux */
-					/* u231 ina700a 0x45 dac_avtt */
-					/* u232 ina700a 0x46 gtyp_avcc */
-					/* u233 ina700a 0x47 vcco_x5io */
+					/* si5518 */
+					/* u59 si5518 0x60 */
+					/* j31 connector */
 				};
-				i2cmux1_4: i2c@4 {
+				i2cmux2_4: i2c@4 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <4>;
-					/* nc */
+					/* usb0_hub */
+					/* DNP u242 usb5744 */
 				};
-				i2cmux1_5: i2c@5 {
+				i2cmux2_5: i2c@5 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <5>;
-					/* sfp_01 */
+					/* nc */
 				};
-				i2cmux1_6: i2c@6 {
+				i2cmux2_6: i2c@6 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <6>;
-					/* sfp_02 */
+					/* nc */
 				};
-				i2cmux1_7: i2c@7 {
+				i2cmux2_7: i2c@7 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <7>;
-					/* sfp_03 */
+					/* nc */
 				};
 			};
 		};

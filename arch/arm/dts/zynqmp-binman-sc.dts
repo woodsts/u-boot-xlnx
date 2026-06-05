@@ -68,10 +68,12 @@
 				fit,fdt-list-val = "zynqmp-sc-k24-revA", "zynqmp-sc-k24-revA-vek385-revA",
 						   "zynqmp-sc-k24-revA-vr-r-a2488-01-revA",
 						   "zynqmp-sc-k24-revA-ve-x-a2112-00-revA",
+						   "zynqmp-sc-k24-revA-vrk160-revB",
 						   "zynqmp-sc-k24-revA-vrk160-revA",
 						   "zynqmp-sc-k24-revA-scu200-revA",
 						   "zynqmp-sc-k24-revA-vpk360-revA",
 						   "zynqmp-sc-k24-revA-vek386-revA",
+						   "zynqmp-sc-k24-revA-vrk165-revB",
 						   "zynqmp-sc-k24-revA-vrk165-revA";
 
 				images {
@@ -104,24 +106,32 @@
 						fdt = "fdt-4";
 					};
 					conf-5 {
-						description = "*vrk160*";
+						description = "*vrk160-revB*";
 						fdt = "fdt-5";
 					};
 					conf-6 {
-						description = "*scu200*";
+						description = "*vrk160*";
 						fdt = "fdt-6";
 					};
 					conf-7 {
-						description = "*vpk360*";
+						description = "*scu200*";
 						fdt = "fdt-7";
 					};
 					conf-8 {
-						description = "*vek386*";
+						description = "*vpk360*";
 						fdt = "fdt-8";
 					};
 					conf-9 {
-						description = "*vrk165*";
+						description = "*vek386*";
 						fdt = "fdt-9";
+					};
+					conf-10 {
+						description = "*vrk165-revB*";
+						fdt = "fdt-10";
+					};
+					conf-11 {
+						description = "*vrk165*";
+						fdt = "fdt-11";
 					};
 				};
 			};
