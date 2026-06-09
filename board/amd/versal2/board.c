@@ -620,3 +620,31 @@ void set_dfu_alt_info(char *interface, char *devstr)
 	env_set("dfu_alt_info", buf);
 }
 #endif
+
+int spi_get_env_dev(void)
+{
+	struct udevice *dev;
+	const char *name;
+	int bootseq;
+
+	switch (versal2_get_bootmode()) {
+	case QSPI_MODE_24BIT:
+	case QSPI_MODE_32BIT:
+		name = "spi@f1030000";
+		break;
+	case OSPI_MODE:
+		name = "spi@f1010000";
+		break;
+	default:
+		return -1;
+	}
+
+	if (uclass_get_device_by_name(UCLASS_SPI, name, &dev)) {
+		debug("SPI driver for %s is not present\n", name);
+		return -1;
+	}
+
+	bootseq = dev_seq(dev);
+	debug("bootseq %d\n", bootseq);
+	return bootseq;
+}
