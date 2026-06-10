@@ -917,8 +917,8 @@
 		gic: interrupt-controller@e2000000 {
 			compatible = "arm,gic-v3";
 			#interrupt-cells = <3>;
-			reg = <0 0xe2000000 0 0x10000>,
-			      <0 0xe2060000 0 0x200000>;
+			reg = <0 0xe2000000 0 0x10000>,		/* GICD */
+			      <0 0xe2060000 0 0x100000>;	/* GICR, 8 cores * 0x20000 */
 			interrupt-controller;
 			interrupts = <1 9 4>;
 			#address-cells = <2>;
