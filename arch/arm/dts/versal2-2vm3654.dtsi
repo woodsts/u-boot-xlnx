@@ -179,3 +179,27 @@
 		};
 	};
 };
+
+/*
+ * 2vm3654 has 4 cores and 3 GIC ITS blocks (vs 8 cores / 1 ITS in the base
+ * versal2.dtsi). The extra ITS blocks shift the redistributor base, and the
+ * smaller core count shrinks the redistributor region.
+ */
+&gic {
+	reg = <0 0xe2000000 0 0x10000>,		/* GICD */
+	      <0 0xe20a0000 0 0x80000>;		/* GICR, 4 cores * 0x20000 */
+
+	its1: msi-controller@e2060000 {
+		compatible = "arm,gic-v3-its";
+		msi-controller;
+		#msi-cells = <1>;
+		reg = <0 0xe2060000 0 0x20000>;
+	};
+
+	its2: msi-controller@e2080000 {
+		compatible = "arm,gic-v3-its";
+		msi-controller;
+		#msi-cells = <1>;
+		reg = <0 0xe2080000 0 0x20000>;
+	};
+};
