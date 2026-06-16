@@ -75,6 +75,9 @@
 #define DWC3_GCTL		0xc110
 #define DWC3_GEVTEN		0xc114
 #define DWC3_GSTS		0xc118
+#define DWC3_GSTS_CURMOD(n)		((n) & 0x3)
+#define DWC3_GSTS_CURMOD_HOST		1
+#define DWC3_GSTS_CURMOD_DEVICE		0
 #define DWC3_GUCTL1		0xc11c
 #define DWC3_GSNPSID		0xc120
 #define DWC3_GGPIO		0xc124
