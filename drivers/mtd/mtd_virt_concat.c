@@ -273,7 +273,17 @@ static void mtd_virt_concat_destroy_items(void)
 	struct mtd_virt_concat_node *item, *temp;
 
 	list_for_each_entry_safe(item, temp, &concat_node_list, head) {
-		mtd_virt_concat_release_subdevs(item);
+		if (item->mtd) {
+			struct mtd_concat *concat = (struct mtd_concat *)item->mtd;
+
+			del_mtd_device(item->mtd);
+			kfree(item->mtd->name);
+			mtd_virt_concat_put_mtd_devices(concat);
+			mtd_concat_destroy(item->mtd);
+			item->mtd = NULL;
+		} else {
+			mtd_virt_concat_release_subdevs(item);
+		}
 		kfree(item->nodes);
 		list_del(&item->head);
 		kfree(item);
