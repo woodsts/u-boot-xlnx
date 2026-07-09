@@ -972,7 +972,7 @@ static int dw_i3c_probe(struct udevice *dev)
 	}
 
 	ret = reset_get_bulk(dev, &master->resets);
-	if (ret) {
+	if (ret && ret != -ENOTSUPP && ret != -ENOENT) {
 		dev_err(dev, "Can't get reset: %d\n", ret);
 		return ret;
 	}
