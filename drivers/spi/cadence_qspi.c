@@ -434,14 +434,20 @@ static int cadence_qspi_rx_dll_tuning(struct spi_slave *spi, const struct spi_me
 		writel((CQSPI_REG_PHY_CONFIG_RESYNC_FLD_MASK | txtap | i |
 		       CQSPI_REG_PHY_CONFIG_RESET_FLD_MASK),
 		       regbase + CQSPI_REG_PHY_CONFIG);
-		/* Check lock of loopback */
+		/*
+		 * After the RESET+RESYNC pulse the slave (forward) DLL is what
+		 * re-settles for the new tap, so poll DLL_LOCK (bit 0). The
+		 * Linux cadence-quadspi driver polls DLL_LOCK here; LPBK_LOCK
+		 * (bit 15) is the master loopback lock and is not the correct
+		 * per-tap indicator. Align with Linux.
+		 */
 		if (priv->dll_mode == CQSPI_DLL_MODE_MASTER) {
 			ret = wait_for_bit_le32
 				(regbase + CQSPI_REG_DLL_LOWER,
-				 CQSPI_REG_DLL_LOWER_LPBK_LOCK_MASK, 1,
+				 CQSPI_REG_DLL_LOWER_DLL_LOCK_MASK, 1,
 				 CQSPI_TIMEOUT_MS, 0);
 			if (ret) {
-				printf("LOWER_DLL_LOCK bit err: %i\n", ret);
+				printf("DLL_LOCK bit err at tap %d: %d\n", i, ret);
 				return ret;
 			}
 		}
@@ -591,12 +597,17 @@ static int cadence_spi_setdlldelay(struct spi_slave *spi, const struct spi_mem_o
 	       CQSPI_REG_PHY_CONFIG_RESET_FLD_MASK),
 	       regbase + CQSPI_REG_PHY_CONFIG);
 
+	/*
+	 * Committing the chosen tap is another RESET+RESYNC, so poll
+	 * DLL_LOCK (bit 0) here too, consistent with the per-tap loop and
+	 * with the Linux cadence-quadspi driver.
+	 */
 	if (priv->dll_mode == CQSPI_DLL_MODE_MASTER) {
 		ret = wait_for_bit_le32(regbase + CQSPI_REG_DLL_LOWER,
-					CQSPI_REG_DLL_LOWER_LPBK_LOCK_MASK,
+					CQSPI_REG_DLL_LOWER_DLL_LOCK_MASK,
 					1, CQSPI_TIMEOUT_MS, 0);
 		if (ret) {
-			printf("LOWER_DLL_LOCK bit err: %i\n", ret);
+			printf("DLL_LOCK bit err: %d\n", ret);
 			return ret;
 		}
 	}
