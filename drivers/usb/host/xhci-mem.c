@@ -736,6 +736,7 @@ void xhci_setup_addressable_virt_dev(struct xhci_ctrl *ctrl,
 	int slot_id = udev->slot_id;
 	int speed = udev->speed;
 	int route = 0;
+	u32 portsc;
 #if CONFIG_IS_ENABLED(DM_USB)
 	struct usb_device *dev = udev;
 	struct usb_hub_device *hub;
@@ -777,7 +778,8 @@ void xhci_setup_addressable_virt_dev(struct xhci_ctrl *ctrl,
 
 	switch (speed) {
 	case USB_SPEED_SUPER:
-		slot_ctx->dev_info |= cpu_to_le32(SLOT_SPEED_SS);
+		portsc = xhci_readl(&ctrl->hcor->portregs[hop_portnr - 1].or_portsc);
+		slot_ctx->dev_info |= cpu_to_le32(SLOT_SPEED(PORT_SPEED_ID(portsc)));
 		break;
 	case USB_SPEED_HIGH:
 		slot_ctx->dev_info |= cpu_to_le32(SLOT_SPEED_HS);
