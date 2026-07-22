@@ -1020,6 +1020,11 @@ static int xhci_submit_root(struct usb_device *udev, unsigned long pipe,
 				debug("SPEED = SUPERSPEED\n");
 				tmpbuf[1] |= USB_PORT_STAT_SUPER_SPEED >> 8;
 				break;
+			default:
+				debug("SPEED = non-legacy PSI 0x%x, treating as SUPERSPEED\n",
+				      PORT_SPEED_ID(reg));
+				tmpbuf[1] |= USB_PORT_STAT_SUPER_SPEED >> 8;
+				break;
 			}
 		}
 		if (reg & PORT_PE)

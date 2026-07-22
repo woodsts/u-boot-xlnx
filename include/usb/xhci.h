@@ -297,6 +297,10 @@ struct xhci_hcor {
 #define	SLOT_SPEED_LS		(XDEV_LS << 10)
 #define	SLOT_SPEED_HS		(XDEV_HS << 10)
 #define	SLOT_SPEED_SS		(XDEV_SS << 10)
+#define DEV_SPEED_SHIFT		10
+#define SLOT_SPEED_SHIFT	20
+#define PORT_SPEED_ID(p)	(((p) & DEV_SPEED_MASK) >> DEV_SPEED_SHIFT)
+#define SLOT_SPEED(id)		((id) << SLOT_SPEED_SHIFT)
 /* Port Indicator Control */
 #define PORT_LED_OFF	(0 << 14)
 #define PORT_LED_AMBER	(1 << 14)
